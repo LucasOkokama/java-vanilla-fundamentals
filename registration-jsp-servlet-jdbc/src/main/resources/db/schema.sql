@@ -1,0 +1,13 @@
+CREATE DATABASE IF NOT EXISTS employees;
+
+USE employees;
+
+CREATE TABLE IF NOT EXISTS employees (
+    id INT PRIMARY KEY,
+    first_name VARCHAR(20) DEFAULT NULL,
+    last_name VARCHAR(20) DEFAULT NULL,
+    username VARCHAR(250) DEFAULT NULL,
+    password VARCHAR(20) DEFAULT NULL,
+    address VARCHAR(45) DEFAULT NULL,
+    contact VARCHAR(45) DEFAULT NULL
+)
