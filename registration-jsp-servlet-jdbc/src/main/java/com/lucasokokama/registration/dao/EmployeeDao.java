@@ -1,13 +1,13 @@
 package com.lucasokokama.registration.dao;
 
 import com.lucasokokama.registration.model.Employee;
+import com.lucasokokama.registration.model.Login;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class EmployeeDao {
+  private static final String dbUrl = "jdbc:mysql://localhost:3306/employees?useSSL=false";
+
   public int registerEmployee(Employee employee) throws ClassNotFoundException {
     String INSERT_USERS_SQL = "INSERT INTO employees" +
             "(id, first_name, last_name, username, password, address, contact) VALUES" +
@@ -18,7 +18,7 @@ public class EmployeeDao {
     Class.forName("com.mysql.jdbc.Driver");
 
     try (
-      Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/employees?useSSL=false", "root", "root");
+      Connection connection = DriverManager.getConnection(dbUrl, "root", "root");
       PreparedStatement preparedStatement = connection.prepareStatement(INSERT_USERS_SQL)
     ) {
       preparedStatement.setInt(1, 1);
@@ -35,6 +35,30 @@ public class EmployeeDao {
       printSQLException(e);
     }
     return result;
+  }
+
+  public boolean validateLogin(Login login) throws SQLException, ClassNotFoundException{
+      Class.forName("com.mysql.jdbc.Driver");
+
+      boolean isValid = false;
+
+      String LOGIN_USER_SQL = "SELECT id, username, password FROM employees WHERE username = ?";
+
+      try(
+        Connection connection = DriverManager.getConnection(dbUrl, "root", "root");
+        PreparedStatement stmt = connection.prepareStatement(LOGIN_USER_SQL)
+      ){
+        stmt.setString(1, login.getUsername());
+        ResultSet rs = stmt.executeQuery();
+
+        if(rs.next()){
+          isValid = login.getPassword().equals(rs.getString("password"));
+        }
+      }
+      catch (SQLException e) {
+        printSQLException(e);
+      }
+      return isValid;
   }
 
   private void printSQLException(SQLException ex) {
